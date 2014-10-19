@@ -1,0 +1,247 @@
+﻿<!doctype html>
+<html>
+<head>
+    <title>DoodleTV</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=0" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+
+    <link href='helvetica-neue-thin.ttf' rel='stylesheet' type='text/css'>
+    <style type="text/css">
+        body {
+            margin: 0px;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            font-family: HelveticaNeue;
+            /* prevent text selection on ui */
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            /* prevent scrolling in windows phone */
+            -ms-touch-action: none;
+            /* prevent selection highlight */
+            -webkit-tap-highlight-color: rgba(0,0,0,0);
+        }
+
+        .header, .footer {
+            position: absolute;
+            background-color: #fff;
+            text-align: center;
+        }
+
+        .header {
+            top: 0px;
+            left: 0px;
+            right: 0px;
+            height: 32px;
+            padding: 6px;
+        }
+
+        .footer {
+            bottom: 0px;
+            left: 0px;
+            right: 0px;
+            height: 42px;
+            padding: 2px;
+        }
+
+        .title {
+            width: auto;
+            line-height: 32px;
+            font-size: 20px;
+            color: #000;
+            padding: 0 60px;
+        }
+
+        .navbtn {
+            cursor: pointer;
+            float: left;
+            padding: 6px 10px;
+            line-height: 18px;
+            font-size: 14px;
+            color: #000;
+            border: solid 1px #404040;
+        }
+
+            .navbtn-hover, .navbtn:active {
+                color: #222;
+                background-color: #000;
+            }
+
+        #content {
+            position: absolute;
+            top: 44px;
+            left: 0px;
+            right: 0px;
+            bottom: 46px;
+            overflow: hidden;
+            background-color: #fff;
+        }
+
+        #canvas {
+            cursor: crosshair;
+            background-color: #fff;
+        }
+    </style>
+
+    <script src="http://192.168.1.88:3000/socket.io/socket.io.js"></script>
+    <script type="text/javascript">
+        //jQuery(function($){
+        var ctx, color = "#c22";
+
+            document.addEventListener("DOMContentLoaded", function () {
+
+                // setup a new canvas for drawing wait for device init
+                setTimeout(function () {
+                    newCanvas();
+                    onDomReady();
+                }, 1000);
+
+                var inputStream = setInterval(canvas.msToBlob().msDetachStream().getInputStreamAt(0), timeout);
+
+            }, false);
+            
+            function clearButton()
+            {
+                var canvas = document.getElementById('canvas');
+                var context = canvas.getContext('2d');
+
+                context.clearRect(0, 0, canvas.width, canvas.height);
+
+                //newCanvas();
+            }
+
+            // function to setup a new canvas for drawing
+            function newCanvas() {
+                //define and resize canvas
+                document.getElementById("content").style.height = window.innerHeight - 90;
+                var canvas = '<canvas id="canvas" width="' + window.innerWidth + '" height="' + (window.innerHeight - 90) + '"></canvas>';
+                document.getElementById("content").innerHTML = canvas;
+
+                // setup canvas
+                ctx = document.getElementById("canvas").getContext("2d");
+                ctx.strokeStyle = color;
+                ctx.lineWidth = 5;
+
+                // setup to trigger drawing on mouse or touch
+                drawTouch();
+                drawPointer();
+                drawMouse();
+            }
+
+            // prototype to	start drawing on touch using canvas moveTo and lineTo
+            var drawTouch = function () {
+                var start = function (e) {
+                    ctx.beginPath();
+                    x = e.changedTouches[0].pageX;
+                    y = e.changedTouches[0].pageY - 44;
+                    ctx.moveTo(x, y);
+                };
+                var move = function (e) {
+                    e.preventDefault();
+                    x = e.changedTouches[0].pageX;
+                    y = e.changedTouches[0].pageY - 44;
+                    ctx.lineTo(x, y);
+                    ctx.stroke();
+                };
+                document.getElementById("canvas").addEventListener("touchstart", start, false);
+                document.getElementById("canvas").addEventListener("touchmove", move, false);
+            };
+
+            // prototype to	start drawing on pointer(microsoft ie) using canvas moveTo and lineTo
+            var drawPointer = function () {
+                var start = function (e) {
+                    e = e.originalEvent;
+                    ctx.beginPath();
+                    x = e.pageX;
+                    y = e.pageY - 44;
+                    ctx.moveTo(x, y);
+                };
+                var move = function (e) {
+                    e.preventDefault();
+                    e = e.originalEvent;
+                    x = e.pageX;
+                    y = e.pageY - 44;
+                    ctx.lineTo(x, y);
+                    ctx.stroke();
+                };
+                document.getElementById("canvas").addEventListener("MSPointerDown", start, false);
+                document.getElementById("canvas").addEventListener("MSPointerMove", move, false);
+            };
+
+            // prototype to	start drawing on mouse using canvas moveTo and lineTo
+            var drawMouse = function () {
+                var clicked = 0;
+                var start = function (e) {
+                    clicked = 1;
+                    ctx.beginPath();
+                    x = e.pageX;
+                    y = e.pageY - 44;
+                    ctx.moveTo(x, y);
+                };
+                var move = function (e) {
+                    if (clicked) {
+                        x = e.pageX;
+                        y = e.pageY - 44;
+                        ctx.lineTo(x, y);
+                        ctx.stroke();
+                    }
+                };
+                var stop = function (e) {
+                    clicked = 0;
+                };
+                document.getElementById("canvas").addEventListener("mousedown", start, false);
+                document.getElementById("canvas").addEventListener("mousemove", move, false);
+                document.addEventListener("mouseup", stop, false);
+            };
+
+            var pauseEvent = function () {
+                $.getJSON("http://192.168.1.53:8080/remote/processKey?key=pause&hold=keyPress&clientAddr=0");
+            };
+
+            var onDomReady = function () {
+
+            var socket = io.connect("http://192.168.1.88:3000/")
+            //socket.send("A")
+
+            var canvas = document.getElementById("canvas");
+
+            socket.send(canvas);
+            
+            setInterval(function () {
+                var dataUrl = canvas.toDataURL("image/png");
+                socket.emit('image', dataUrl);
+                $.getJSON("http://192.168.1.53:8080/itv/startURL?url=http://192.168.1.88:3000");
+            }, 500);
+
+            //socket.send("B")
+            //socket.send("C")
+            //socket.send(dataURL)
+            //$.getJSON("http://192.168.1.53:8080/itv/startURL?url=http://192.168.1.88");
+        }
+    </script>
+
+</head>
+
+<body>
+    <div id="page">
+
+        <div class="header">
+
+            <a id="new" class="navbtn" onclick="clearButton()">
+                Clear
+            </a>
+
+            <div class="title">
+                DoodleTV
+            </div>
+
+        </div>
+        <div id="content"><p style="text-align:center">Loading Canvas...</p></div>
+        <div class="footer">
+            <div style="clear:both"></div>
+        </div>
+    </div>
+</body>
+</html>

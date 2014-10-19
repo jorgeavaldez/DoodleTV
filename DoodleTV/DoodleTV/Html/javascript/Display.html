@@ -1,0 +1,53 @@
+﻿<html>
+
+<head>
+    <title>DISPLAY</title>
+    <script src="http://192.168.1.88:3000/socket.io/socket.io.js"></script>
+    <style>
+        #overlay-wrapper
+        {
+            height: 100%;
+            width: 100%;
+        }
+        #overlay
+        {
+            /*
+            -webkit-transform:rotate(90deg);
+            -o-transform:rotate(90deg);
+            -ms-transform:rotate(90deg);
+            -moz-transform:rotate(90deg);  
+            */  
+            
+            margin: auto;        
+        }
+    </style>
+    <script>
+
+        if (!!navigator.setResolution)
+        {
+            navigator.setResolution(1280, 720);
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+
+            var socket = io.connect("http://192.168.1.88:3000/")
+
+            socket.on('image', function (dataUrl) {
+                document.getElementById('overlay').innerHTML = '<img src="' + dataUrl + '" />'
+            });
+
+        }, false);
+    </script>
+</head>
+
+<body>
+    <!--Image rendering-->
+    <div id="overlay-wrapper">
+        <div id="overlay">
+            LOADING...
+        </div>
+    </div>
+
+</body>
+
+</html>

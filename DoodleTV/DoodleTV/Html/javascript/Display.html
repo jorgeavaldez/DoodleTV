@@ -2,26 +2,17 @@
 
 <head>
     <title>DISPLAY</title>
-    <!--script src="http://192.168.1.88:3000/socket.io/socket.io.js"></!--script>
+    <!--script src="http://192.168.1.88:3000/socket.io/socket.io.js"></script-->
 
-    <!--style>
-        #overlay-wrapper
+    <style>
+        #p
         {
+            position: absolute;
             height: 100%;
             width: 100%;
+            background-size: 100%;
         }
-        #overlay
-        {
-            /*
-            -webkit-transform:rotate(90deg);
-            -o-transform:rotate(90deg);
-            -ms-transform:rotate(90deg);
-            -moz-transform:rotate(90deg);  
-            */  
-            
-            margin: auto;        
-        }
-    </style-->
+    </style>
 
     <script>
 
@@ -52,7 +43,7 @@
                 curImg = 1;
             }
 
-            setTimeout("loop()", 500);
+            setTimeout("loop()", 300);
         }
 
     </script>

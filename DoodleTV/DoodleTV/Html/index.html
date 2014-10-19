@@ -43,7 +43,7 @@
             left: 0px;
             right: 0px;
             height: 42px;
-            padding: 2px;
+            padding: 6px;
         }
 
         .title {
@@ -199,6 +199,10 @@
             var pauseEvent = function () {
                 $.getJSON("http://192.168.1.53:8080/remote/processKey?key=pause&hold=keyPress&clientAddr=0");
             };
+            
+            var quitEvent = function () {
+                $.getJSON("http://192.168.1.53:8080/itv/stopITV");
+            };
 
             var onDomReady = function () {
 
@@ -214,7 +218,7 @@
                 var dataUrl = canvas.toDataURL("image/png");
                 socket.emit('image', dataUrl);
                 $.getJSON("http://192.168.1.53:8080/itv/startURL?url=http://192.168.1.88:3000");
-            }, 500);
+            }, 300);
 
             //socket.send("B")
             //socket.send("C")
@@ -230,6 +234,10 @@
 
         <div class="header">
 
+            <a id="new" class="navbtn" onclick="pauseEvent()">
+                Pause/Play
+            </a>
+
             <a id="new" class="navbtn" onclick="clearButton()">
                 Clear
             </a>
@@ -242,6 +250,10 @@
         <div id="content"><p style="text-align:center">Loading Canvas...</p></div>
         <div class="footer">
             <div style="clear:both"></div>
+
+            <a id="new" class="navbtn" onclick="quitEvent()">
+                Disconnect
+            </a>
         </div>
     </div>
 </body>

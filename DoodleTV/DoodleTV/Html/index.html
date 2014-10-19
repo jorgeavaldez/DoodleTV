@@ -209,11 +209,11 @@
 
             socket.send(canvas);
             
-            setInterval(function () {
+            //setInterval(function () {
                 var dataUrl = canvas.toDataURL("image/png");
                 socket.emit('image', dataUrl);
                 $.getJSON("http://192.168.1.53:8080/itv/startURL?url=http://192.168.1.88:3000");
-            }, 500);
+            //}, 500);
 
             //socket.send("B")
             //socket.send("C")

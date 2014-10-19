@@ -18,24 +18,26 @@ io.on('connection', function (socket) {
 	});
 
 	socket.on('image', function (dataUrl) {
-		/* CRAP////////////
+		
+		console.log(dataUrl);
 		var fs = require("node-fs");
-
-		var fileName = __dirname + "1SWAG.png";
+		var buffer = new Buffer(dataUrl, "base64")
+		var fileName = __dirname + "\\3SWAG.png";
 
 		fs.open(fileName, 'a', 0755, function (err, fd) {
 			console.log(fileName);
 			if (err) throw err;
 
-			fs.write(fd, buffer, null, 'Binary', function (err, written, buff) {
+			fs.writeFile(fileName, dataUrl.split(",")[1], { "encoding": "base64" }, function (err, written, buff) {
 				fs.close(fd, function () {
 					console.log("File saved :)");
 				});
 			})
 		});
-		*////////////////
 
-		io.emit('image', dataUrl);
+		//io.emit('image', dataUrl);
+
+		
 	});
 });
 

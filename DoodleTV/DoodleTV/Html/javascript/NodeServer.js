@@ -12,15 +12,15 @@ app.get('/', function (req, res) {
 });
 
 io.on('connection', function (socket) {
-	console.log('a user connected');
+	console.log('User connected...');
 
 	socket.on('message',function(event){ 
-		console.log('Received message from client!', event)
+		console.log('Client message...', event)
 	});
 
 	socket.on('image', function (dataUrl) {
 		
-		console.log(dataUrl);
+		//console.log(dataUrl);
 		var fs = require("node-fs");
 		var buffer = new Buffer(dataUrl, "base64")
 		var fileName = __dirname + "\\p" + curImg + ".png";
@@ -37,7 +37,7 @@ io.on('connection', function (socket) {
 
 			fs.writeFile(fileName, dataUrl.split(",")[1], { "encoding": "base64" }, function (err, written, buff) {
 				fs.close(fd, function () {
-					console.log("File saved :)");
+					console.log("File " + fileName + " saved :D");
 				});
 			})
 		});
